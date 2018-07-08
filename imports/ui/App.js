@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from "meteor/react-meteor-data";
 
-import { Notes } from "../api/notes.js"
+import { Notes } from "../api/notes.js";
 import Note from "./Note.js";
 import AccountsUIWrapper from './AccountUIWrapper.js';
 
@@ -24,7 +24,7 @@ class App extends React.Component {
 
   toggleNote(note) {
     return (() => {
-      return Meteor.call("notes.setChecked", note._id, !note.checked)
+      return Meteor.call("notes.setChecked", note._id, !note.checked);
     });
   }
 
@@ -38,14 +38,31 @@ class App extends React.Component {
     this.setState((prevState) => ({ hideMuted: !prevState.hideMuted }));
   }
 
+  togglePrivacy(note) {
+    return (() => {
+      return Meteor.call("notes.setPrivate", note._id, !note.private);
+    });
+  }
+
   renderNotes() {
     let notes = this.props.notes;
     if(this.state.hideMuted) {
       notes = notes.filter(note => !note.checked);
     }
     return notes.map(note => {
-      return <Note onClickToggle={ this.toggleNote(note) } onClickDelete={ this.deleteNote(note) } noteClassName={ note.checked? "checked" : "" } key={ note._id } note={ note } />;
-
+      const currentUserId = this.props.currentUser && this.props.currentUser._id;
+      const showOwnerOptions = currentUserId == note.owner;
+      const noteClassName = `${ note.checked? "checked" : "" } ${ note.private? "private" : "" }`;
+      return (
+        <Note
+          onClickToggle={ this.toggleNote(note) }
+          onClickDelete={ this.deleteNote(note) }
+          noteClassName={ noteClassName }
+          key={ note._id }
+          note={ note }
+          showOwnerOptions={ showOwnerOptions }
+          onClickPrivate={ this.togglePrivacy(note) } />
+      );
     });
   }
 
@@ -109,6 +126,8 @@ App.propTypes = {
 };
 
 export default withTracker(() => {
+  Meteor.subscribe("notes");
+
   return {
     notes: Notes.find({}, { sort: { createdAt: -1 } }).fetch(),
     mutedNotesCount: Notes.find({ checked: { $eq: true } }).count(),

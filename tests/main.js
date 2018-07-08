@@ -1,4 +1,5 @@
 import assert from "assert";
+import { notesApiTest } from "../imports/api/notes.tests.js";
 
 describe("todo", function () {
   it("package.json has correct name", async function () {
@@ -18,3 +19,5 @@ describe("todo", function () {
     });
   }
 });
+
+notesApiTest();
