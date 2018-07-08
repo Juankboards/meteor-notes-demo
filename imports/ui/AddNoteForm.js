@@ -6,12 +6,10 @@ const AddNoteForm = ({ handleSubmit }) => (
     <input
       type="text"
       name="title"
-      ref="title"
       className="form-control"
       placeholder="Note Title" />
     <textarea
-      name="content"
-      ref="content" />
+      name="content" />
     <input
       type="submit"
       value="Save"

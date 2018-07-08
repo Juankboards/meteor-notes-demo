@@ -7,6 +7,7 @@ import { withTracker } from "meteor/react-meteor-data";
 import { Notes } from "../api/notes.js";
 import Note from "./Note.js";
 import AccountsUIWrapper from './AccountUIWrapper.js';
+import AddNoteForm from "./AddNoteForm.js";
 
 
 class App extends React.Component {
@@ -68,12 +69,12 @@ class App extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const title = ReactDOM.findDOMNode(this.refs.title).value.trim();
-    const content = ReactDOM.findDOMNode(this.refs.content).value.trim();
+    const title = event.target.title.value.trim();
+    const content = event.target.content.value.trim();
 
     Meteor.call("notes.insert", title, content);
-    ReactDOM.findDOMNode(this.refs.title).value = '';
-    ReactDOM.findDOMNode(this.refs.content).value = '';
+    event.target.title.value = '';
+    event.target.content.value = '';
   }
 
   render() {
@@ -94,21 +95,7 @@ class App extends React.Component {
             </label>
           </div>
           { this.props.currentUser &&
-            <form className="new-task" onSubmit={ this.handleSubmit } >
-              <input
-                type="text"
-                name="title"
-                ref="title"
-                className="form-control"
-                placeholder="Note Title" />
-              <textarea
-                name="content"
-                ref="content" />
-              <input
-                type="submit"
-                value="Save"
-                className="form-submit" />
-            </form>
+            <AddNoteForm handleSubmit={ this.handleSubmit } />
           }
         </header>
         <ul>
