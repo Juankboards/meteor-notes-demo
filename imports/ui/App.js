@@ -24,15 +24,13 @@ class App extends React.Component {
 
   toggleNote(note) {
     return (() => {
-      return Notes.update(note._id, {
-        $set: { checked: !note.checked },
-      });
+      return Meteor.call("notes.setChecked", note._id, !note.checked)
     });
   }
 
   deleteNote(note) {
     return (() => {
-      return Notes.remove(note._id);
+      return Meteor.call("notes.remove", note._id);
     });
   }
 
@@ -41,7 +39,6 @@ class App extends React.Component {
   }
 
   renderNotes() {
-    console.log();
     let notes = this.props.notes;
     if(this.state.hideMuted) {
       notes = notes.filter(note => !note.checked);
@@ -57,13 +54,7 @@ class App extends React.Component {
     const title = ReactDOM.findDOMNode(this.refs.title).value.trim();
     const content = ReactDOM.findDOMNode(this.refs.content).value.trim();
 
-    Notes.insert({
-      title,
-      content,
-      createdAt: new Date(),
-      owner: Meteor.userId(),
-      username: Meteor.user().username,
-    });
+    Meteor.call("notes.insert", title, content);
     ReactDOM.findDOMNode(this.refs.title).value = '';
     ReactDOM.findDOMNode(this.refs.content).value = '';
   }
